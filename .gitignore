@@ -9,3 +9,7 @@
 
 # maven
 /target
+
+# package
+/pkg
+*.pkg.tar.zst
