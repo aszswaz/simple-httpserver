@@ -1,0 +1,10 @@
+#!/bin/env zsh
+
+JAR_PATHS=(
+    "./target/simple-httpserver.jar"
+    "/usr/share/simple-httpserver/simple-httpserver.jar"
+)
+
+for file in $JAR_PATHS; do
+    [ -e "$file" ] && java -jar "$file" $@
+done
