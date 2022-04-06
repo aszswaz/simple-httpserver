@@ -1,8 +1,12 @@
 package cn.aszswaz.simplehttpserver;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.util.StringUtils.hasLength;
 
 /**
  * @author aszswaz
@@ -16,15 +20,15 @@ public class SimpleController {
      * 回声
      */
     @RequestMapping(value = "ping")
-    public String ping() {
-        return "Hello World";
+    public String ping(@RequestBody(required = false) String content) {
+        return hasLength(content) ? content : "Hello World";
     }
 
     /**
      * 随机字符串
      */
     @GetMapping(value = "random")
-    public String random(int length) {
+    public String random(@RequestParam(value = "length") int length) {
         StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < length; i++) {
