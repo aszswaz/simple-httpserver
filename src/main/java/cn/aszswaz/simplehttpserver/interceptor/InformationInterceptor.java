@@ -31,7 +31,7 @@ public class InformationInterceptor implements HandlerInterceptor, WebMvcConfigu
     }
 
     @Override
-    public boolean preHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) throws Exception {
+    public boolean preHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
         // 打印请求信息
         // 打印起始行
         System.out.printf(">>> %s %s %s%n", request.getMethod(), request.getServletPath(), request.getProtocol());
