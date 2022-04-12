@@ -1,5 +1,6 @@
-package cn.aszswaz.simplehttpserver;
+package cn.aszswaz.simplehttpserver.config;
 
+import cn.aszswaz.simplehttpserver.entity.Options;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -49,6 +50,7 @@ public class Container {
 
             if (cli.hasOption(help)) {
                 new HelpFormatter().printHelp("simple-httpserver [options]", options);
+                printAPIS();
                 System.exit(0);
             }
 
@@ -62,6 +64,18 @@ public class Container {
             new HelpFormatter().printHelp("simple-httpserver [options] ...", options);
             throw new RuntimeException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * 打印可用的 API
+     */
+    private static void printAPIS() {
+        System.out.println("Available APIs:");
+        String format = "%-5s %-40s %-40s %s%n";
+        System.out.printf(format, "METHOD", "URI", "REQUEST BODY", "COMMAND");
+        System.out.printf(format, "ALL", "/ping", "", "回声，如果没有请求体，则返回 ping 字符串，如果有请求体，则返回请求体");
+        System.out.printf(format, "GET", "/random?length=${length}", "", "获取指定长度的随机字符串");
+        System.out.printf(format, "POST", "/encode", "{\"charset\": \"\", \"text\": \"\"}", "将 UTF-8 编码的字符集，转换为指定编码");
     }
 
     public static Options options() {

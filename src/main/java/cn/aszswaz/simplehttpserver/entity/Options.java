@@ -1,4 +1,4 @@
-package cn.aszswaz.simplehttpserver;
+package cn.aszswaz.simplehttpserver.entity;
 
 /**
  * 选项

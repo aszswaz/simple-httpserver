@@ -1,6 +1,5 @@
-package cn.aszswaz.simplehttpserver;
+package cn.aszswaz.simplehttpserver.interceptor;
 
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
@@ -13,8 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import static cn.aszswaz.simplehttpserver.Container.options;
-import static org.springframework.util.StringUtils.hasLength;
+import static cn.aszswaz.simplehttpserver.config.Container.options;
 
 /**
  * 该拦截器用于输出请求和响应信息
@@ -45,19 +43,6 @@ public class InformationInterceptor implements HandlerInterceptor, WebMvcConfigu
                 String header = headers.nextElement();
                 String value = request.getHeader(header);
                 System.out.printf(">>> %s: %s%n", header, value);
-            }
-
-            // 打印请求体
-            if (hasLength(request.getContentType())) {
-                InputStream in = request.getInputStream();
-                StringBuilder body = new StringBuilder();
-                int len;
-                byte[] buff = new byte[8192];
-                while ((len = in.read(buff)) != -1) {
-                    body.append(new String(buff, 0, len));
-                }
-                System.out.println(">>>");
-                System.out.println(body);
             }
         }
 
