@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.util.StringUtils.hasLength;
+import static cn.aszswaz.simplehttpserver.config.Container.options;
 
 /**
  * @author aszswaz
@@ -34,9 +35,11 @@ public class SimpleController {
      * 回声
      */
     @RequestMapping(value = "ping")
-    public String ping(@RequestBody String content) {
-        System.out.println(">>> Request body:");
-        System.out.println(content);
+    public String ping(@RequestBody(required = false) String content) {
+        if (options().isVerbose()) {
+            System.out.println(">>> Request body:");
+            System.out.println(content);
+        }
         return hasLength(content) ? content : "Hello World";
     }
 
@@ -52,7 +55,12 @@ public class SimpleController {
             builder.append((char) code);
         }
 
-        return builder.toString();
+        String body = builder.toString();
+        if (options().isVerbose()) {
+            System.out.println(">>> Request body:");
+            System.out.println(body);
+        }
+        return body;
     }
 
     /**
@@ -60,14 +68,18 @@ public class SimpleController {
      */
     @PostMapping(value = "encode")
     public void encode(@RequestBody @NotNull String body, @NotNull HttpServletResponse response) throws IOException {
-        System.out.println(">>> Request body:");
-        System.out.println(body);
+        if (options().isVerbose()) {
+            System.out.println(">>> Request body:");
+            System.out.println(body);
+        }
         EncodeVO encode = this.jsonMapper.readValue(body, EncodeVO.class);
 
         response.setCharacterEncoding(encode.getCharset());
         response.setContentType("text/plain");
         response.getOutputStream().write(encode.getText().getBytes(encode.getCharset()));
-        System.out.println("<<< Response body");
-        System.out.println(encode.getText());
+        if (options().isVerbose()) {
+            System.out.println("<<< Response body");
+            System.out.println(encode.getText());
+        }
     }
 }
