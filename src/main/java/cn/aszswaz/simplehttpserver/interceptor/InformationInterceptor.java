@@ -1,5 +1,6 @@
 package cn.aszswaz.simplehttpserver.interceptor;
 
+import cn.aszswaz.simplehttpserver.entity.Options;
 import java.util.Collection;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,12 @@ import static cn.aszswaz.simplehttpserver.config.Container.options;
 @Component
 public class InformationInterceptor implements HandlerInterceptor, WebMvcConfigurer {
 
+    private final Options options;
+
+    public InformationInterceptor() {
+        this.options = options();
+    }
+
     @Override
     public void addInterceptors(@NotNull InterceptorRegistry registry) {
         registry.addInterceptor(this).addPathPatterns("/**");
@@ -36,7 +43,7 @@ public class InformationInterceptor implements HandlerInterceptor, WebMvcConfigu
         // 打印起始行
         System.out.printf(">>> %s %s %s%n", request.getMethod(), request.getServletPath(), request.getProtocol());
 
-        if (options().isVerbose()) {
+        if (this.options.isVerbose()) {
             // 打印请求头
             Enumeration<String> headers = request.getHeaderNames();
             while (headers.hasMoreElements()) {
@@ -53,7 +60,7 @@ public class InformationInterceptor implements HandlerInterceptor, WebMvcConfigu
     public void postHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler, ModelAndView modelAndView) {
         System.out.println("<<< " + HttpStatus.resolve(response.getStatus()));
 
-        if (options().isVerbose()) {
+        if (this.options.isVerbose()) {
             Collection<String> headers = response.getHeaderNames();
             for (String header : headers) {
                 System.out.printf("<<< %s: %s%n", header, response.getHeader(header));
