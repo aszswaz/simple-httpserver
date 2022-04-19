@@ -1,8 +1,10 @@
 package cn.aszswaz.simplehttpserver.controllers;
 
+import cn.aszswaz.simplehttpserver.entity.Options;
 import cn.aszswaz.simplehttpserver.entity.vo.EncodeVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
@@ -26,29 +28,45 @@ import static cn.aszswaz.simplehttpserver.config.Container.options;
 @SuppressWarnings("JavaDoc")
 public class SimpleController {
     private final ObjectMapper jsonMapper;
+    private final Options options;
 
     @Autowired
     public SimpleController(ObjectMapper jsonMapper) {
         this.jsonMapper = jsonMapper;
+        this.options = options();
     }
 
     /**
      * 回声
      */
     @RequestMapping(value = "ping")
-    public String ping(@RequestBody(required = false) String content) {
-        if (options().isVerbose()) {
-            System.out.println(">>> Request body:");
-            System.out.println(content);
+    public void ping(
+            @RequestBody(required = false) String content,
+            @NotNull HttpServletRequest request,
+            @NotNull HttpServletResponse response
+    ) throws IOException {
+        this.printRequest(content);
+        String resBody;
+
+        if (hasLength(content)) {
+            response.setContentType(request.getContentType());
+            resBody = content;
+        } else {
+            resBody = "Hello World";
+            response.setContentType("text/plain");
         }
-        return hasLength(content) ? content : "Hello World";
+        this.printResponse(resBody);
+
+        byte[] buff = resBody.getBytes(StandardCharsets.UTF_8);
+        response.setContentLength(buff.length);
+        response.getOutputStream().write(buff);
     }
 
     /**
      * 随机字符串
      */
     @GetMapping(value = "random")
-    public String random(@RequestParam(value = "length") int length, HttpServletRequest request, HttpServletResponse response) {
+    public String random(@RequestParam(value = "length") int length) {
         StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < length; i++) {
@@ -57,11 +75,7 @@ public class SimpleController {
         }
 
         String body = builder.toString();
-        if (options().isVerbose()) {
-            System.out.println(">>> Request body:");
-            System.out.println(body);
-        }
-        response.setContentType(request.getContentType());
+        this.printResponse(body);
         return body;
     }
 
@@ -70,19 +84,13 @@ public class SimpleController {
      */
     @PostMapping(value = "encode")
     public void encode(@RequestBody @NotNull String body, @NotNull HttpServletResponse response) throws IOException {
-        if (options().isVerbose()) {
-            System.out.println(">>> Request body:");
-            System.out.println(body);
-        }
+        this.printRequest(body);
         EncodeVO encode = this.jsonMapper.readValue(body, EncodeVO.class);
 
         response.setCharacterEncoding(encode.getCharset());
         response.setContentType("text/plain");
         response.getOutputStream().write(encode.getText().getBytes(encode.getCharset()));
-        if (options().isVerbose()) {
-            System.out.println("<<< Response body");
-            System.out.println(encode.getText());
-        }
+        this.printResponse(encode.getText());
     }
 
     /**
@@ -91,6 +99,22 @@ public class SimpleController {
     @RequestMapping(value = "delay")
     public String delay(@RequestParam(value = "sleep", defaultValue = "1000") int sleep) throws InterruptedException {
         Thread.sleep(sleep);
-        return "Hello World";
+        String response = "Hello World";
+        this.printResponse(response);
+        return response;
+    }
+
+    private void printRequest(String request) {
+        if (this.options.isVerbose()) {
+            System.out.println(">>> Request body:");
+            System.out.println(request);
+        }
+    }
+
+    private void printResponse(String response) {
+        if (options().isVerbose()) {
+            System.out.println("<<< Response body");
+            System.out.println(response);
+        }
     }
 }
