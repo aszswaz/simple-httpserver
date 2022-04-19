@@ -13,3 +13,6 @@
 # package
 /pkg
 *.pkg.tar.zst
+
+# build
+/dist
