@@ -14,5 +14,5 @@
 /pkg
 *.pkg.tar.zst
 
-# build
+# go build
 /dist
