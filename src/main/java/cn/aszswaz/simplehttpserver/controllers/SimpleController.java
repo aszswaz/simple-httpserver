@@ -3,6 +3,7 @@ package cn.aszswaz.simplehttpserver.controllers;
 import cn.aszswaz.simplehttpserver.entity.vo.EncodeVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class SimpleController {
      * 随机字符串
      */
     @GetMapping(value = "random")
-    public String random(@RequestParam(value = "length") int length) {
+    public String random(@RequestParam(value = "length") int length, HttpServletRequest request, HttpServletResponse response) {
         StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < length; i++) {
@@ -60,6 +61,7 @@ public class SimpleController {
             System.out.println(">>> Request body:");
             System.out.println(body);
         }
+        response.setContentType(request.getContentType());
         return body;
     }
 
@@ -81,5 +83,14 @@ public class SimpleController {
             System.out.println("<<< Response body");
             System.out.println(encode.getText());
         }
+    }
+
+    /**
+     * 延迟响应请求
+     */
+    @RequestMapping(value = "delay")
+    public String delay(@RequestParam(value = "sleep", defaultValue = "1000") int sleep) throws InterruptedException {
+        Thread.sleep(sleep);
+        return "Hello World";
     }
 }
