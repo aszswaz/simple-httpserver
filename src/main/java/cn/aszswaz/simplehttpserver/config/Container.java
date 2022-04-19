@@ -76,6 +76,7 @@ public class Container {
         System.out.printf(format, "ALL", "/ping", "", "回声，如果没有请求体，则返回 ping 字符串，如果有请求体，则返回请求体");
         System.out.printf(format, "GET", "/random?length=${length}", "", "获取指定长度的随机字符串");
         System.out.printf(format, "POST", "/encode", "{\"charset\": \"\", \"text\": \"\"}", "将 UTF-8 编码的字符集，转换为指定编码");
+        System.out.printf(format, "ALL", "/delay?sleep=${sleep}", "", "延迟发送响应体，单位：毫秒，默认延迟 1000 ms");
     }
 
     public static Options options() {
