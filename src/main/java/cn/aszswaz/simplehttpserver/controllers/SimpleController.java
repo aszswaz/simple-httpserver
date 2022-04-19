@@ -56,6 +56,7 @@ public class SimpleController {
             response.setContentType("text/plain");
         }
         this.printResponse(resBody);
+        this.printResHeader(response);
 
         byte[] buff = resBody.getBytes(StandardCharsets.UTF_8);
         response.setContentLength(buff.length);
@@ -108,6 +109,15 @@ public class SimpleController {
         if (this.options.isVerbose()) {
             System.out.println(">>> Request body:");
             System.out.println(request);
+        }
+    }
+
+    private void printResHeader(@NotNull HttpServletResponse response) {
+        if (this.options.isVerbose()) {
+            for (String name : response.getHeaderNames()) {
+                String value = response.getHeader(name);
+                System.out.println(name + ": " + value);
+            }
         }
     }
 
