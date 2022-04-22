@@ -1,7 +1,9 @@
 package cn.aszswaz.simplehttpserver.controllers;
 
+import cn.aszswaz.simplehttpserver.config.RandomType;
 import cn.aszswaz.simplehttpserver.entity.Options;
 import cn.aszswaz.simplehttpserver.entity.vo.EncodeVO;
+import cn.aszswaz.simplehttpserver.service.RandomService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -29,11 +31,13 @@ import static cn.aszswaz.simplehttpserver.config.Container.options;
 public class SimpleController {
     private final ObjectMapper jsonMapper;
     private final Options options;
+    private final RandomService rService;
 
     @Autowired
-    public SimpleController(ObjectMapper jsonMapper) {
+    public SimpleController(ObjectMapper jsonMapper, RandomService rService) {
         this.jsonMapper = jsonMapper;
         this.options = options();
+        this.rService = rService;
     }
 
     /**
@@ -66,15 +70,21 @@ public class SimpleController {
      * 随机字符串
      */
     @GetMapping(value = "random")
-    public String random(@RequestParam(value = "length") int length) {
-        StringBuilder builder = new StringBuilder();
-
-        for (int i = 0; i < length; i++) {
-            int code = (int) (97 + Math.random() * (122 - 97 + 1));
-            builder.append((char) code);
+    public String random(
+            @RequestParam(value = "length", defaultValue = "100") int length,
+            @RequestParam(value = "type", defaultValue = "TEXT") @NotNull RandomType type
+    ) {
+        String body;
+        switch (type) {
+            case TEXT:
+                body = this.rService.text(length);
+                break;
+            case JSON:
+                body = this.rService.json(length);
+                break;
+            default:
+                throw new RuntimeException();
         }
-
-        String body = builder.toString();
         this.printResponse(body);
         return body;
     }
