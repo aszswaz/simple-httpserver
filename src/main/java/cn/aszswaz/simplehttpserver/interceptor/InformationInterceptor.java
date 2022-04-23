@@ -3,6 +3,7 @@ package cn.aszswaz.simplehttpserver.interceptor;
 import cn.aszswaz.simplehttpserver.entity.Options;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +42,11 @@ public class InformationInterceptor implements HandlerInterceptor, WebMvcConfigu
     public boolean preHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
         // 打印请求信息
         // 打印起始行
-        System.out.printf(">>> %s %s?%s %s%n", request.getMethod(), request.getRequestURI(), request.getQueryString(), request.getProtocol());
+        String queryString = request.getQueryString();
+        if (Objects.nonNull(queryString))
+            System.out.printf(">>> %s %s?%s %s%n", request.getMethod(), request.getRequestURI(), request.getQueryString(), request.getProtocol());
+        else
+            System.out.printf(">>> %s %s %s%n", request.getMethod(), request.getRequestURI(), request.getProtocol());
 
         if (this.options.isVerbose()) {
             // 打印请求头
